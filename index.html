@@ -1,259 +1,97 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>華容道小遊戲</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f0f0f0;
-        flex-direction: column;
-    }
-    h1 {
-        margin-bottom: 20px;
-    }
-    #game-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    #game-board {
-        width: 400px;
-        height: 500px;
-        border: 2px solid #333;
-        position: relative;
-        background-color: #eee;
-    }
-    .piece {
-        position: absolute;
-        box-sizing: border-box;
-        border: 1px solid #000;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background-color: #4CAF50;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 24px;
-        font-weight: bold;
-    }
-    .piece.selected {
-        border: 3px solid #FFC107;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-    #cao-cao { width: 200px; height: 200px; background-color: #f44336; }
-    .vertical { width: 100px; height: 200px; background-color: #2196F3; }
-    .horizontal { width: 200px; height: 100px; background-color: #9C27B0; }
-    .soldier { width: 100px; height: 100px; background-color: #795548; }
-    #info-panel {
-        margin-top: 20px;
-        font-size: 24px;
-    }
-    #reset-button {
-        margin-top: 20px;
-        padding: 10px 20px;
-        font-size: 18px;
-        cursor: pointer;
-    }
-    #win-message {
-        display: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        font-size: 28px;
-        text-align: center;
-    }
-</style>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2299">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
 </head>
 <body>
-
-<h1>華容道</h1>
-
-<div id="game-container">
-    <div id="game-board">
-        </div>
-    <div id="info-panel">
-        步數: <span id="move-count">0</span>
-    </div>
-    <button id="reset-button">重新開始</button>
-    <div id="win-message">
-        恭喜！<br>您成功了！
-    </div>
-</div>
-
-<script>
-    const gameBoard = document.getElementById('game-board');
-    const moveCountSpan = document.getElementById('move-count');
-    const resetButton = document.getElementById('reset-button');
-    const winMessage = document.getElementById('win-message');
-    const unitSize = 100; // 棋盤格子的基本大小 (px)
-    let moveCount = 0;
-    let selectedPiece = null;
-
-    // 棋子佈局 (x, y, 寬, 高, id, 類型, 名稱)
-    const initialLayout = [
-        { x: 1, y: 0, w: 2, h: 2, id: 'cao-cao', type: 'cao-cao', name: '曹操' },
-        { x: 0, y: 0, w: 1, h: 2, id: 'zhang-fei', type: 'vertical', name: '張飛' },
-        { x: 3, y: 0, w: 1, h: 2, id: 'ma-chao', type: 'vertical', name: '馬超' },
-        { x: 0, y: 2, w: 1, h: 2, id: 'zhao-yun', type: 'vertical', name: '趙雲' },
-        { x: 3, y: 2, w: 1, h: 2, id: 'huang-zhong', type: 'vertical', name: '黃忠' },
-        { x: 1, y: 2, w: 2, h: 1, id: 'guan-yu', type: 'horizontal', name: '關羽' },
-        { x: 1, y: 3, w: 1, h: 1, id: 'zu-1', type: 'soldier', name: '卒' },
-        { x: 2, y: 3, w: 1, h: 1, id: 'zu-2', type: 'soldier', name: '卒' },
-        { x: 0, y: 4, w: 1, h: 1, id: 'zu-3', type: 'soldier', name: '卒' },
-        { x: 3, y: 4, w: 1, h: 1, id: 'zu-4', type: 'soldier', name: '卒' }
-    ];
-
-    let pieces = [];
-
-    function createPieces() {
-        gameBoard.innerHTML = '';
-        pieces = JSON.parse(JSON.stringify(initialLayout)).map(layout => {
-            const piece = document.createElement('div');
-            piece.id = layout.id;
-            piece.className = `piece ${layout.type}`;
-            piece.textContent = layout.name;
-            piece.style.left = `${layout.x * unitSize}px`;
-            piece.style.top = `${layout.y * unitSize}px`;
-            piece.style.width = `${layout.w * unitSize}px`;
-            piece.style.height = `${layout.h * unitSize}px`;
-            
-            piece.dataset.x = layout.x;
-            piece.dataset.y = layout.y;
-            piece.dataset.w = layout.w;
-            piece.dataset.h = layout.h;
-
-            piece.addEventListener('click', () => selectPiece(piece));
-            gameBoard.appendChild(piece);
-            return piece;
-        });
-    }
-
-    function selectPiece(piece) {
-        if (selectedPiece) {
-            selectedPiece.classList.remove('selected');
-        }
-        if (selectedPiece === piece) {
-            selectedPiece = null;
-        } else {
-            selectedPiece = piece;
-            selectedPiece.classList.add('selected');
-        }
-    }
-
-    gameBoard.addEventListener('click', (e) => {
-        if (e.target === gameBoard && selectedPiece) {
-            const rect = gameBoard.getBoundingClientRect();
-            const x = Math.floor((e.clientX - rect.left) / unitSize);
-            const y = Math.floor((e.clientY - rect.top) / unitSize);
-            
-            movePiece(selectedPiece, x, y);
-        }
-    });
-
-    function movePiece(piece, targetX, targetY) {
-        const currentX = parseInt(piece.dataset.x);
-        const currentY = parseInt(piece.dataset.y);
-        const w = parseInt(piece.dataset.w);
-        const h = parseInt(piece.dataset.h);
-
-        // 判斷移動方向和距離
-        const dx = targetX - currentX;
-        const dy = targetY - currentY;
-
-        let newX = currentX, newY = currentY;
-
-        // 僅允許水平或垂直移動
-        if (dx !== 0 && dy !== 0) return;
-
-        if (Math.abs(dx) > 0) { // 水平移動
-             newX = currentX + Math.sign(dx);
-             if (targetX < currentX) newX = targetX;
-             else if (targetX >= currentX + w) newX = targetX - w + 1;
-             else return;
-        } else if (Math.abs(dy) > 0) { // 垂直移動
-            newY = currentY + Math.sign(dy);
-            if (targetY < currentY) newY = targetY;
-            else if (targetY >= currentY + h) newY = targetY - h + 1;
-            else return;
-        }
-
-        if (isValidMove(piece, newX, newY)) {
-            piece.dataset.x = newX;
-            piece.dataset.y = newY;
-            piece.style.left = `${newX * unitSize}px`;
-            piece.style.top = `${newY * unitSize}px`;
-            
-            moveCount++;
-            moveCountSpan.textContent = moveCount;
-            
-            selectedPiece.classList.remove('selected');
-            selectedPiece = null;
-            
-            checkWin();
-        }
-    }
-
-    function isValidMove(movingPiece, newX, newY) {
-        const w = parseInt(movingPiece.dataset.w);
-        const h = parseInt(movingPiece.dataset.h);
-
-        // 檢查是否超出邊界
-        if (newX < 0 || newY < 0 || newX + w > 4 || newY + h > 5) {
-            return false;
-        }
-
-        // 檢查是否與其他棋子碰撞
-        for (const piece of pieces) {
-            if (piece === movingPiece) continue;
-
-            const otherX = parseInt(piece.dataset.x);
-            const otherY = parseInt(piece.dataset.y);
-            const otherW = parseInt(piece.dataset.w);
-            const otherH = parseInt(piece.dataset.h);
-
-            if (newX < otherX + otherW &&
-                newX + w > otherX &&
-                newY < otherY + otherH &&
-                newY + h > otherY) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    function checkWin() {
-        const caoCao = document.getElementById('cao-cao');
-        if (parseInt(caoCao.dataset.x) === 1 && parseInt(caoCao.dataset.y) === 3) {
-            winMessage.style.display = 'block';
-        }
-    }
-
-    function resetGame() {
-        moveCount = 0;
-        moveCountSpan.textContent = moveCount;
-        selectedPiece = null;
-        winMessage.style.display = 'none';
-        createPieces();
-    }
-
-    resetButton.addEventListener('click', resetGame);
-
-    // 初始化遊戲
-    resetGame();
-</script>
-
+<p class="p1">&lt;!doctype html&gt;</p>
+<p class="p1">&lt;html lang="zh-TW"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="utf-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;我的小遊戲集&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin:0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: Arial, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background:#f3f4f6;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>min-height:100vh;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding:24px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width:min(720px, 100%);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background:#fff;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius:16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow:0 10px 30px rgba(0,0,0,.08);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding:24px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>h1{ margin:0 0 8px; font-size:28px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>p{ margin:0 0 18px; color:#444; line-height:1.5; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.grid{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:grid;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap:14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top:12px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.game{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-decoration:none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border:2px solid #e5e7eb;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius:14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding:16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:block;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color:#111;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background:#fafafa;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.game:hover{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transform: translateY(-2px);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-color:#93c5fd;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow:0 8px 18px rgba(0,0,0,.06);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background:#fff;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.title{ font-size:20px; font-weight:700; margin-bottom:6px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.desc{ font-size:14px; color:#555; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.note{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top:16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:13px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color:#666;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>code{ background:#f1f5f9; padding:2px 6px; border-radius:6px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1&gt;我的小遊戲集&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;p&gt;點下面的卡片就能開始玩（在 GitHub Pages 上線後，分享這一頁就可以）。&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="grid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a class="game" href="./huarongdao.html"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="title"&gt;華容道（原版）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="desc"&gt;你原本的華容道小遊戲版本。&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/a&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;a class="game" href="./number-puzzle.html"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="title"&gt;數字華容道（4×4）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="desc"&gt;15-puzzle：點擊與空白格相鄰的數字方塊來移動。&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="note"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>檔案要放在同一層資料夾：&lt;code&gt;index.html&lt;/code&gt;、&lt;code&gt;huarongdao.html&lt;/code&gt;、&lt;code&gt;number-puzzle.html&lt;/code&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
 </body>
 </html>
