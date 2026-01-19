@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2299">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="zh-TW"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;4×4 數字華容道&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: Arial, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>height:100vh;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin:0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-color:#f0f0f0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>flex-direction:column;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>h1{ margin-bottom: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#game-container{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>flex-direction:column;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#game-board{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width:400px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>height:400px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border:2px solid #333;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position:relative;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-color:#eee;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>user-select:none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>touch-action: manipulation;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.tile{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position:absolute;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-sizing:border-box;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid #000;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor:pointer;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: all 0.15s ease;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-color:#4CAF50;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color:white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:28px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight:bold;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius:10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.tile:hover{ transform: scale(1.02); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.tile:active{ transform: scale(0.99); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* 空白格不顯示 */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.empty{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor:default;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>#info-panel{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#reset-button{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding:10px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:18px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor:pointer;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#win-message{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position:absolute;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>top:50%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>left:50%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transform:translate(-50%,-50%);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-color:rgba(0,0,0,0.75);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color:white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding:20px 24px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius:12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:26px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-align:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>line-height:1.3;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#hint{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>opacity:0.8;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>max-width: 420px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-align:center;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;h1&gt;數字華容道 4×4&lt;/h1&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="game-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="game-board"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="win-message"&gt;恭喜！&lt;br&gt;你完成了！&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="info-panel"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>步數: &lt;span id="move-count"&gt;0&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button id="reset-button"&gt;重新開始（打亂）&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="hint"&gt;玩法：點擊「和空白格相鄰」的數字方塊即可移動。&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const gameBoard = document.getElementById('game-board');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const moveCountSpan = document.getElementById('move-count');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const resetButton = document.getElementById('reset-button');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const winMessage = document.getElementById('win-message');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const size = 4; <span class="Apple-converted-space">              </span>// 4x4</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const unitSize = 100; <span class="Apple-converted-space">        </span>// 每格 100px，所以棋盤 400x400</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const total = size * size;<span class="Apple-converted-space">    </span>// 16</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const EMPTY = 0;<span class="Apple-converted-space">              </span>// 用 0 代表空白格</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>let moveCount = 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let tiles = []; <span class="Apple-converted-space">              </span>// DOM tiles (包含空白格，但空白會 display:none)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let board = []; <span class="Apple-converted-space">              </span>// 數字陣列，長度16，例如 [1,2,3,...,15,0]</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function indexToXY(i){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return { x: i % size, y: Math.floor(i / size) };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function xyToIndex(x,y){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return y * size + x;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function render(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 依 board 重新定位每個 tile</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; total; i++){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const val = board[i];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const tile = tiles[val]; // 以數字當索引：tiles[1] 是「1」的 tile，tiles[0] 是空白 tile</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const { x, y } = indexToXY(i);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tile.style.left = `${x * unitSize}px`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tile.style.top<span class="Apple-converted-space">  </span>= `${y * unitSize}px`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tile.dataset.x = x;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tile.dataset.y = y;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function isSolved(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 1..15,0</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; total - 1; i++){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (board[i] !== i + 1) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return board[total - 1] === EMPTY;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function showWin(show){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>winMessage.style.display = show ? 'block' : 'none';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function resetMoveCount(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>moveCount = 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>moveCountSpan.textContent = moveCount;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function swapIndices(i, j){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const tmp = board[i];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>board[i] = board[j];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>board[j] = tmp;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function getEmptyIndex(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return board.indexOf(EMPTY);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function canMove(val){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (val === EMPTY) return false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const valIndex = board.indexOf(val);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const emptyIndex = getEmptyIndex();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const a = indexToXY(valIndex);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const b = indexToXY(emptyIndex);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const manhattan = Math.abs(a.x - b.x) + Math.abs(a.y - b.y);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return manhattan === 1; // 必須相鄰</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function moveTile(val){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!canMove(val)) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const valIndex = board.indexOf(val);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const emptyIndex = getEmptyIndex();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>swapIndices(valIndex, emptyIndex);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>moveCount++;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>moveCountSpan.textContent = moveCount;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>render();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (isSolved()){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>showWin(true);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// --------- 產生「一定可解」的打亂 ---------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 判斷 4x4 是否可解：</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 1) 計算 inversion（反序數）</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 2) 找空白格從底部算第幾列（1~4）</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 規則（size=4為偶數）：</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// <span class="Apple-converted-space">  </span>- 空白在「底部第奇數列」時，inversions 必須是偶數</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// <span class="Apple-converted-space">  </span>- 空白在「底部第偶數列」時，inversions 必須是奇數</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function inversionCount(arr){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const nums = arr.filter(v =&gt; v !== EMPTY);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let inv = 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; nums.length; i++){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for (let j = i + 1; j &lt; nums.length; j++){</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (nums[i] &gt; nums[j]) inv++;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return inv;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function blankRowFromBottom(arr){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const emptyIndex = arr.indexOf(EMPTY);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const rowFromTop = Math.floor(emptyIndex / size); // 0..3</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return size - rowFromTop; // 4..1</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function isSolvable(arr){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const inv = inversionCount(arr);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const blankFromBottom = blankRowFromBottom(arr);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// size=4（偶數）</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (blankFromBottom % 2 === 1){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 空白在底部第奇數列 -&gt; inversions 偶數</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return inv % 2 === 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 空白在底部第偶數列 -&gt; inversions 奇數</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return inv % 2 === 1;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function shuffleSolvable(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const arr = [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for (let i = 1; i &lt;= total - 1; i++) arr.push(i);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>arr.push(EMPTY);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Fisher-Yates shuffle until solvable and not already solved</p>
+<p class="p1"><span class="Apple-converted-space">    </span>do {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for (let i = arr.length - 1; i &gt; 0; i--){</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const j = Math.floor(Math.random() * (i + 1));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const t = arr[i]; arr[i] = arr[j]; arr[j] = t;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} while (!isSolvable(arr) || (arr.every((v, i) =&gt; v === (i === total-1 ? 0 : i+1))));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>return arr;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// --------- 建立棋子 ---------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function createTiles(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gameBoard.querySelectorAll('.tile').forEach(e =&gt; e.remove());</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tiles = new Array(total);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 建立 0..15 的 tile（0 是空白）</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for (let val = 0; val &lt; total; val++){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const tile = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tile.className = 'tile' + (val === EMPTY ? ' empty' : '');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tile.textContent = (val === EMPTY) ? '' : String(val);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tile.style.width = `${unitSize}px`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tile.style.height = `${unitSize}px`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>tile.addEventListener('click', () =&gt; moveTile(val));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>tiles[val] = tile;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gameBoard.appendChild(tile);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function resetGame(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>showWin(false);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>resetMoveCount();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>board = shuffleSolvable();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>createTiles();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>resetButton.addEventListener('click', resetGame);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 初始化</p>
+<p class="p1"><span class="Apple-converted-space">  </span>resetGame();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
