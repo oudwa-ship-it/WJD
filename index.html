@@ -16,7 +16,7 @@
       padding:24px;
     }
     .card{
-      width:min(720px, 100%);
+      width:min(820px, 100%);
       background:#fff;
       border-radius:16px;
       box-shadow:0 10px 30px rgba(0,0,0,.08);
@@ -24,12 +24,14 @@
     }
     h1{ margin:0 0 8px; font-size:28px; }
     p{ margin:0 0 18px; color:#444; line-height:1.5; }
+
     .grid{
       display:grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap:14px;
       margin-top:12px;
     }
+
     a.game{
       text-decoration:none;
       border:2px solid #e5e7eb;
@@ -46,20 +48,35 @@
       box-shadow:0 8px 18px rgba(0,0,0,.06);
       background:#fff;
     }
-    .title{ font-size:20px; font-weight:700; margin-bottom:6px; }
-    .desc{ font-size:14px; color:#555; }
+
+    .title{
+      font-size:20px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+    .desc{
+      font-size:14px;
+      color:#555;
+      line-height:1.4;
+    }
+
     .note{
       margin-top:16px;
       font-size:13px;
       color:#666;
     }
-    code{ background:#f1f5f9; padding:2px 6px; border-radius:6px; }
+    code{
+      background:#f1f5f9;
+      padding:2px 6px;
+      border-radius:6px;
+    }
   </style>
 </head>
+
 <body>
   <div class="card">
     <h1>空間逃脫小遊戲</h1>
-    <p>點下面的卡片就能開始玩。</p>
+    <p>點下面的卡片就能開始玩</p>
 
     <div class="grid">
       <a class="game" href="./huarongdao.html">
@@ -71,7 +88,22 @@
         <div class="title">數字華容道（4×4）</div>
         <div class="desc">15-puzzle：點擊與空白格相鄰的數字方塊來移動，將數字順序從1排到15</div>
       </a>
+
+      <a class="game" href="./sock-puzzle-3x3.html">
+        <div class="title">破襪華容道（3×3）</div>
+        <div class="desc">
+          左上角為空格，拼出完整的破襪圖片
+        </div>
+      </a>
+    </div>
+
+    <div class="note">
+      檔案需放在同一層：<code>index.html</code>、
+      <code>huarongdao.html</code>、
+      <code>number-puzzle.html</code>、
+      <code>sock-puzzle-3x3.html</code>
     </div>
   </div>
 </body>
 </html>
+
