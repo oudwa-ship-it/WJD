@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>破襪華容道 3×3</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  margin:0;
+  background:#f0f0f0;
+  flex-direction:column;
+}
+
+h1{ margin-bottom:12px; }
+
+#game-container{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+
+#board{
+  width:300px;
+  height:300px;
+  position:relative;
+  border:2px solid #333;
+  background:#ddd;
+}
+
+.tile{
+  position:absolute;
+  width:100px;
+  height:100px;
+  box-sizing:border-box;
+  border:1px solid #000;
+  cursor:pointer;
+  background-image:url("sock.png");
+  background-size:300px 300px;
+  transition:all 0.2s ease;
+}
+
+.tile:hover{
+  transform:scale(1.03);
+}
+
+.empty{
+  display:none;
+}
+
+#win{
+  display:none;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(0,0,0,0.75);
+  color:#fff;
+  padding:20px 24px;
+  border-radius:12px;
+  font-size:22px;
+  z-index:999;
+  text-align:center;
+}
+
+button{
+  padding:8px 16px;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>破襪華容道 3×3</h1>
+
+<div id="game-container">
+  <div id="board">
+    <div id="win">恭喜！<br>您成功了！</div>
+  </div>
+  <button onclick="resetGame()">重新開始</button>
+</div>
+
+<script>
+const size = 3;
+const total = 9;
+const EMPTY = 0;     // 左上角空格
+const unit = 100;
+
+let board = [];
+let tiles = [];
+
+const boardDiv = document.getElementById("board");
+const winDiv = document.getElementById("win");
+
+function indexToXY(i){
+  return { x: i % size, y: Math.floor(i / size) };
+}
+
+function isSolved(){
+  // 空格在 0，其餘 1~8 依序
+  for(let i=1;i<total;i++){
+    if(board[i] !== i) return false;
+  }
+  return board[0] === EMPTY;
+}
+
+function canMove(val){
+  const i = board.indexOf(val);
+  const e = board.indexOf(EMPTY);
+  const a = indexToXY(i);
+  const b = indexToXY(e);
+  return Math.abs(a.x-b.x) + Math.abs(a.y-b.y) === 1;
+}
+
+function move(val){
+  if(!canMove(val)) return;
+  const i = board.indexOf(val);
+  const e = board.indexOf(EMPTY);
+  [board[i], board[e]] = [board[e], board[i]];
+  render();
+  if(isSolved()) winDiv.style.display="block";
+}
+
+function render(){
+  board.forEach((val,i)=>{
+    const tile = tiles[val];
+    if(!tile) return;
+    const {x,y} = indexToXY(i);
+    tile.style.left = x*unit+"px";
+    tile.style.top  = y*unit+"px";
+  });
+}
+
+function shuffle(){
+  board = [0,1,2,3,4,5,6,7,8];
+  do{
+    for(let i=board.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [board[i],board[j]]=[board[j],board[i]];
+    }
+  }while(!isSolvable() || isSolved());
+}
+
+function isSolvable(){
+  let inv = 0;
+  const arr = board.filter(v=>v!==EMPTY);
+  for(let i=0;i<arr.length;i++){
+    for(let j=i+1;j<arr.length;j++){
+      if(arr[i]>arr[j]) inv++;
+    }
+  }
+  return inv % 2 === 0;
+}
+
+function resetGame(){
+  winDiv.style.display="none";
+  boardDiv.querySelectorAll(".tile").forEach(t=>t.remove());
+  tiles = new Array(total);
+  shuffle();
+
+  for(let v=1;v<total;v++){
+    const tile = document.createElement("div");
+    tile.className="tile";
+    tile.style.backgroundPosition =
+      `${-( (v%size)*unit )}px ${-( Math.floor(v/size)*unit )}px`;
+    tile.onclick = ()=>move(v);
+    tiles[v]=tile;
+    boardDiv.appendChild(tile);
+  }
+
+  tiles[0] = null; // 空格
+  render();
+}
+
+resetGame();
+</script>
+
+</body>
+</html>
