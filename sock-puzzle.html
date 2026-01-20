@@ -23,7 +23,7 @@ h1{ margin-bottom:12px; }
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:12px;
+  gap:10px;
 }
 
 #board{
@@ -52,6 +52,10 @@ h1{ margin-bottom:12px; }
 
 .empty{
   display:none;
+}
+
+#info{
+  font-size:18px;
 }
 
 #win{
@@ -83,8 +87,16 @@ button{
 
 <div id="game-container">
   <div id="board">
-    <div id="win">恭喜！<br>您成功了！</div>
+    <div id="win">
+      恭喜！<br>您成功了！<br>
+      共 <span id="finalCount"></span> 步
+    </div>
   </div>
+
+  <div id="info">
+    步數：<span id="moveCount">0</span>
+  </div>
+
   <button onclick="resetGame()">重新開始</button>
 </div>
 
@@ -96,9 +108,12 @@ const unit = 100;
 
 let board = [];
 let tiles = [];
+let moveCount = 0;
 
 const boardDiv = document.getElementById("board");
 const winDiv = document.getElementById("win");
+const moveCountSpan = document.getElementById("moveCount");
+const finalCountSpan = document.getElementById("finalCount");
 
 function indexToXY(i){
   return { x: i % size, y: Math.floor(i / size) };
@@ -122,11 +137,20 @@ function canMove(val){
 
 function move(val){
   if(!canMove(val)) return;
+
   const i = board.indexOf(val);
   const e = board.indexOf(EMPTY);
   [board[i], board[e]] = [board[e], board[i]];
+
+  moveCount++;
+  moveCountSpan.textContent = moveCount;
+
   render();
-  if(isSolved()) winDiv.style.display="block";
+
+  if(isSolved()){
+    finalCountSpan.textContent = moveCount;
+    winDiv.style.display="block";
+  }
 }
 
 function render(){
@@ -162,6 +186,10 @@ function isSolvable(){
 
 function resetGame(){
   winDiv.style.display="none";
+
+  moveCount = 0;
+  moveCountSpan.textContent = moveCount;
+
   boardDiv.querySelectorAll(".tile").forEach(t=>t.remove());
   tiles = new Array(total);
   shuffle();
@@ -180,6 +208,7 @@ function resetGame(){
   render();
 }
 
+// 初始化
 resetGame();
 </script>
 
